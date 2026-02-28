@@ -1,0 +1,131 @@
+{
+  "name": "Bug Report Generator",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -384,
+        -192
+      ],
+      "id": "7dd999b9-9532-42c5-bffd-b0f034156c7b",
+      "name": "Chat Trigger",
+      "webhookId": "517a11ad-f6fc-4183-8e30-9037fb4acf94"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "\nRole: You are a Senior QA Lead with 15 years of experience specializing in automated defect management and root cause analysis. Your goal is to transform messy application logs into professional, developer-ready bug reports.\n\nTask: Analyze the provided error log data and generate a structured bug report.\n\nConstraints & Logic:\n\nStrict Adherence: Use ONLY the provided log data. Do not hallucinate external URLs, environment details, or assumptions.\n\nMissing Data: If a specific field cannot be determined from the log, mark it as [UNKNOWN].\n\nSeverity Logic: Assign severity (Critical, High, Medium, Low) based on error codes (e.g., 500 series = High/Critical) and impact descriptions.\n\nClarity: Summarize complex stack traces into a concise \"Actual Result.\"\n\nOutput Format:\nPlease use the following Markdown template:\n\n🐞 Bug Report: [Short, descriptive title summarizing the error]\nSeverity: [Critical/High/Medium/Low]\n\nTimestamp: [From log]\n\nEndpoint/Component: [Path or Service affected]\n\nDescription:\n[A brief 1-2 sentence summary of what went wrong.]\n\nSteps to Reproduce:\n\n[Inferred sequence of events based on log flow]\n\n...\n\nExpected Result:\n[The standard successful behavior for this operation]\n\nActual Result:\n[The specific error or exception returned in the log]\n\nLog Snippet/Reference:\n\n[Include the most relevant 2-3 lines of the stack trace or error message here]\n\nOnce Report is generated put it in Google Docs tool names[Bug Document]",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -176,
+        -192
+      ],
+      "id": "b6ec6236-81ee-4910-a151-60b039701f2b",
+      "name": "Bug Report generator"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        16
+      ],
+      "id": "079ecaf2-3dc8-48dd-ba3e-56147d92c2ee",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "fohXCIKUB4cnXaWc",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "https://docs.google.com/document/d/118IexXUsUBfafpfiTa2FH1Ux6yUAEb898MZWNSmp04o/edit?usp=sharing",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('actionFields0_Text', ``, 'string') }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocsTool",
+      "typeVersion": 2,
+      "position": [
+        -32,
+        16
+      ],
+      "id": "30aa4aa3-6ec3-409a-91e6-13048ad05b3e",
+      "name": "Bug Document",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "SLTVK9KMlLIn8LC4",
+          "name": "Google Docs account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Chat Trigger": {
+      "main": [
+        [
+          {
+            "node": "Bug Report generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Bug Report generator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bug Document": {
+      "ai_tool": [
+        [
+          {
+            "node": "Bug Report generator",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "fbd2d547-4802-4ed5-a100-94bd975c57a5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3e957a26c2ef088fe91fca46c0e58cf260651d9851f4c00c33fcb3b9ed0f8aee"
+  },
+  "id": "ardWZ3zwWIAbq7Pm",
+  "tags": []
+}

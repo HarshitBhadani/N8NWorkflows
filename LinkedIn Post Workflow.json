@@ -1,0 +1,279 @@
+{
+  "name": "LinkedIn Post Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a senior QA architect and industry analyst writing in 2026.\n\nYour task is to generate ONLY ONE topic about:\n\n\" AI Powered Software Testing in 2026\"\n\nConstraints:\n\n- Choose the single most impactful and future-defining shift.\n- Avoid generic themes unless you provide a deeply unique angle.\n- The topic must be bold, specific, and insight-driven.\n- It should reflect a real structural change in the industry (not surface-level trends).\n- The topic must be strong enough to anchor a keynote talk.\nOutput format:\n\n1. Title (clear, bold, thought-provoking)\n2. One-sentence thesis (strong and definitive)\n3. Why this topic matters in 2026 (5–7 bullet points with reasoning)\nDo NOT generate multiple topics.\nDo NOT provide alternatives.\nCommit to one topic and defend it.",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -1312,
+        -400
+      ],
+      "id": "465d27ee-9912-44f3-86de-5a506b224025",
+      "name": "Topic Generator"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-safeguard-20b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -1456,
+        -192
+      ],
+      "id": "5e345cf2-aa5a-4254-9994-58cf63fc3da2",
+      "name": "Topic Brain",
+      "credentials": {
+        "groqApi": {
+          "id": "fohXCIKUB4cnXaWc",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "[\n   {\n      \"title\":\"\",\n      \"rationale\":\"\",\n      \"hook\":\"\"\n   }\n]"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -1216,
+        -144
+      ],
+      "id": "c63b8aad-8eda-4d95-8294-622877d605e8",
+      "name": "Topic Format"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -1664,
+        -400
+      ],
+      "id": "c6b3c8e4-3250-4652-b81a-e57fab944d63",
+      "name": "User Request",
+      "webhookId": "cf733ee8-a6b7-4504-bda7-c317ecee8e11"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a high-performing LinkedIn content strategist and B2B copywriter.\n\nInput:\n\n- Title: {{ $json.output[0].title }}\n- Rationale: {{ $json.output[0].rationale }}\n- Suggested Hook: {{ $json.output[0].hook }}\nYour task:\nCreate a high-engagement LinkedIn post based on the inputs.\n\nRequirements:\n\n1. Start with the provided hook (optimize it if necessary for stronger scroll-stopping impact).\n2. Expand the core idea clearly and persuasively.\n3. Maintain a strong narrative flow (problem → shift → insight → implication).\n4. Keep it practical and insight-driven (no fluff or generic motivation).\n5. Use short paragraphs for readability.\n6. Include 3–5 sharp bullet points if helpful.\n7. End with:\n    - A strong takeaway or forward-looking statement\n    - A conversation-driving question\n\nTone:\n\n- Authoritative but conversational\n- Insightful and slightly bold\n- Written for professionals in tech/QA/engineering leadership\nLength:\n\n- 150–300 words\nAfter the post, also provide:\n\nImage Suggestion:\n\n- Describe a visually striking, professional image concept\n- Include composition details (foreground, background, objects, mood)\n- Make it suitable for LinkedIn (clean, modern, minimal)\n- The image should reinforce the main message of the post\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -960,
+        -400
+      ],
+      "id": "4ed6b332-ac10-4fae-bfe7-df8d41a03128",
+      "name": "Post Creator"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -992,
+        -160
+      ],
+      "id": "2ead3fd5-793e-4f69-85ca-06dbb6f4c39e",
+      "name": "Post Creator Brain",
+      "credentials": {
+        "groqApi": {
+          "id": "fohXCIKUB4cnXaWc",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"Post Title\": \"\",\n\t\"Post Description\": \"\",\n    \"Image Generation\" : \"\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -768,
+        -128
+      ],
+      "id": "3c39236a-4fed-4a0c-867f-3f6f814098b6",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "person": "YocpUbR5ga",
+        "text": "={{ $('Post Creator').item.json.output['Post Title'] }}\n{{ $('Post Creator').item.json.output['Post Description'] }}",
+        "shareMediaCategory": "IMAGE",
+        "binaryPropertyName": "={{ $('ImageGenerator').item.binary.data }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        -400
+      ],
+      "id": "b8370c9e-0a35-41aa-8322-b87194c0f0e7",
+      "name": "Create a post",
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "TeOdby2T71qgsK8C",
+          "name": "LinkedIn account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-schnell",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer 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"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Accept",
+              "value": "image/png"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={     \"inputs\": \" {{ $json.output['Image Generation'] }}\"}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -608,
+        -400
+      ],
+      "id": "e5e3287b-8d5d-469d-b5ea-7370400fcf59",
+      "name": "ImageGenerator"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Topic Brain": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Topic Generator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Topic Format": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Topic Generator",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "User Request": {
+      "main": [
+        [
+          {
+            "node": "Topic Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Topic Generator": {
+      "main": [
+        [
+          {
+            "node": "Post Creator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post Creator Brain": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Post Creator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Post Creator",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post Creator": {
+      "main": [
+        [
+          {
+            "node": "ImageGenerator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ImageGenerator": {
+      "main": [
+        [
+          {
+            "node": "Create a post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "d1b97033-e857-4ce8-b459-de264c2f3c1f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3e957a26c2ef088fe91fca46c0e58cf260651d9851f4c00c33fcb3b9ed0f8aee"
+  },
+  "id": "F889yYGW3X0ytKsb",
+  "tags": []
+}
