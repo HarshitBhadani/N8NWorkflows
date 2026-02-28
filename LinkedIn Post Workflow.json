@@ -145,7 +145,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "Bearer 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"
+              "value": "Bearer YourToken"
             },
             {
               "name": "Content-Type",
